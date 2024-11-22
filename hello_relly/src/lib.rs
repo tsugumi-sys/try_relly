@@ -1,6 +1,7 @@
 // mod bsearch;
 // pub mod btree;
-// pub mod buffer;
+pub mod buffer;
+pub mod buffer_ans;
 pub mod disk;
 // mod memcmpable;
 // pub mod query;
