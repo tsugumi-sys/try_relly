@@ -35,6 +35,11 @@ B+Treeにテーブルを格納する…… KOBA789
 
 ヒープファイルのヒープってどんな意味だろう。
 
+### Disk Manager
+
+- ファイル操作（読み取り書き込み）のAPIを提供する。
+- ページサイズごとにデータを格納・メモリに展開して、書き込み・読み込みする。
+
 ### What is `repr(C)`
 
 https://doc.rust-lang.org/nomicon/other-reprs.html#alternative-representations
