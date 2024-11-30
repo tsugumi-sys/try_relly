@@ -1,4 +1,4 @@
-// use std::convert::TryInto;
+use std::convert::TryInto;
 use std::fs::{File, OpenOptions};
 use std::io::{self, prelude::*, SeekFrom};
 use std::path::Path;
@@ -30,6 +30,19 @@ impl PageId {
 impl Default for PageId {
     fn default() -> Self {
         Self::INVALID_PAGE_ID // check: why this number is default?
+    }
+}
+
+impl From<Option<PageId>> for PageId {
+    fn from(page_id: Option<PageId>) -> Self {
+        page_id.unwrap_or_default()
+    }
+}
+
+impl From<&[u8]> for PageId {
+    fn from(bytes: &[u8]) -> Self {
+        let arr = bytes.try_into().unwrap();
+        PageId(u64::from_ne_bytes(arr))
     }
 }
 
@@ -98,14 +111,20 @@ mod tests {
         let mut disk = DiskManager::new(data_file).unwrap();
         let mut hello = Vec::with_capacity(PAGE_SIZE);
         hello.extend_from_slice(b"hello");
-        // fullfil vector with 0 if there is no data.
         hello.resize(PAGE_SIZE, 0);
         let hello_page_id = disk.allocate_page();
         disk.write_page_data(hello_page_id, &hello).unwrap();
-
         let mut world = Vec::with_capacity(PAGE_SIZE);
         world.extend_from_slice(b"world");
         world.resize(PAGE_SIZE, 0);
         let world_page_id = disk.allocate_page();
+        disk.write_page_data(world_page_id, &world).unwrap();
+        drop(disk);
+        let mut disk2 = DiskManager::open(&data_file_path).unwrap();
+        let mut buf = vec![0; PAGE_SIZE];
+        disk2.read_page_data(hello_page_id, &mut buf).unwrap();
+        assert_eq!(hello, buf);
+        disk2.read_page_data(world_page_id, &mut buf).unwrap();
+        assert_eq!(world, buf);
     }
 }
