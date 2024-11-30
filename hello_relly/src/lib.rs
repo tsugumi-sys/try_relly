@@ -1,10 +1,9 @@
-// mod bsearch;
+mod bsearch;
 pub mod btree;
-pub mod btree_ans;
 pub mod buffer;
 pub mod disk;
 // mod memcmpable;
 // pub mod query;
-// mod slotted;
+mod slotted;
 // pub mod table;
 // pub mod tuple;
