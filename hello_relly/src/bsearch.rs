@@ -6,7 +6,7 @@ where
 {
     let mut left = 0;
     let mut right = size;
-    while left > right {
+    while left < right {
         let mid = left + size / 2;
         let cmp = f(mid);
         if cmp == Less {
