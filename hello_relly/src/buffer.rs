@@ -120,8 +120,10 @@ impl BufferPoolManager {
         }
     }
 
+    // pageを読み取ってバッファに格納する。
+    //
+    // 存在しない場合はバッファを用意する（フルの場合は一部捨てて入れ直す）。
     pub fn fetch_page(&mut self, page_id: PageId) -> Result<Rc<Buffer>, Error> {
-        // pageを読み取ってバッファに格納する。存在しない場合はバッファを用意する（フルの場合は一部捨てて入れ直す）。
         if let Some(&buffer_id) = self.page_table.get(&page_id) {
             let frame = &mut self.pool[buffer_id];
             frame.usage_count += 1;
@@ -145,5 +147,44 @@ impl BufferPoolManager {
         self.page_table.remove(&evict_page_id);
         self.page_table.insert(page_id, buffer_id);
         Ok(page)
+    }
+
+    // allocate a buffer for created page
+    //
+    // if evicted buffer is dirty, save it to disk.
+    // allocate evicted buffer to the new page.
+    fn create_page(&mut self) -> Result<Rc<Buffer>, Error> {
+        let buffer_id = self.pool.evict().ok_or(Error::NoFreeBuffer)?;
+        let frame = &mut self.pool[buffer_id];
+        let evict_page_id = frame.buffer.page_id;
+        let page_id = {
+            let buffer = Rc::get_mut(&mut frame.buffer).unwrap();
+            if buffer.is_dirty.get() {
+                self.disk
+                    .write_page_data(evict_page_id, buffer.page.get_mut())?;
+            }
+            let page_id = self.disk.allocate_page();
+            *buffer = Buffer::default();
+            buffer.page_id = page_id;
+            buffer.is_dirty.set(true);
+            frame.usage_count = 1;
+            page_id
+        };
+        let page = Rc::clone(&frame.buffer);
+        self.page_table.remove(&evict_page_id);
+        self.page_table.insert(page_id, buffer_id);
+        Ok(page)
+    }
+
+    // save all dirty buffer data into disk and empty.
+    pub fn flush(&mut self) -> Result<(), Error> {
+        for (&page_id, &buffer_id) in self.page_table.iter() {
+            let frame = &self.pool[buffer_id];
+            let mut page = frame.buffer.page.borrow_mut();
+            self.disk.write_page_data(page_id, page.as_mut())?;
+            frame.buffer.is_dirty.set(false);
+        }
+        self.disk.sync()?;
+        Ok(())
     }
 }

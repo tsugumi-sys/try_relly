@@ -48,14 +48,16 @@ impl DiskManager {
             next_page_id,
         })
     }
+
     pub fn open(heap_file_path: impl AsRef<Path>) -> io::Result<Self> {
         let heap_file = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
             .open(heap_file_path)?;
-        Self::new(heap_file)        
+        Self::new(heap_file)
     }
+
     pub fn read_page_data(&mut self, page_id: PageId, data: &mut [u8]) -> io::Result<()> {
         let offset = PAGE_SIZE as u64 * page_id.to_u64();
         self.heap_file.seek(SeekFrom::Start(offset))?;
@@ -66,11 +68,15 @@ impl DiskManager {
         self.heap_file.seek(SeekFrom::Start(offset))?;
         self.heap_file.write_all(data)
     }
+
+    // create new page (chunk in the heap file)
     pub fn allocate_page(&mut self) -> PageId {
         let page_id = self.next_page_id;
         self.next_page_id += 1;
         PageId(page_id)
     }
+
+    // tell OS to save file data on the memory to its actual disk.
     pub fn sync(&mut self) -> io::Result<()> {
         // flush buffered data.
         // Details: When you write data to a file using buffered I/O, the data may be held in memory temporarily before being written to the file on disk. Calling flush ensures that this buffered data is immediately passed to the operating system for writing.
