@@ -50,6 +50,12 @@ B+Treeにテーブルを格納する…… KOBA789
 - メモリ上にデータを読み込ませたり、ディスクに書き込ませたりする。
 - 複数のバッファを用意してよりたくさんのデータを高速に読み書きできるようにする。
 
+## Btree
+
+### Branch
+
+- PageIdを枝構造で保存するためのモジュール。ページが追加・削除された際に、木構造を操作するためのインターフェースを提供する。
+
 ### What is `repr(C)`
 
 https://doc.rust-lang.org/nomicon/other-reprs.html#alternative-representations
