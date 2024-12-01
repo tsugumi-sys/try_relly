@@ -2,6 +2,7 @@ use bincode::Options;
 use serde::{Deserialize, Serialize};
 
 mod branch;
+mod leaf;
 
 #[derive(Serialize, Deserialize)]
 pub struct Pair<'a> {
