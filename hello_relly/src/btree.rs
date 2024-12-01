@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 
 mod branch;
 mod leaf;
+mod meta;
+mod node;
 
 #[derive(Serialize, Deserialize)]
 pub struct Pair<'a> {
