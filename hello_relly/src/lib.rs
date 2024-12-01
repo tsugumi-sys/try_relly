@@ -2,11 +2,11 @@ mod bsearch;
 pub mod btree;
 pub mod buffer;
 pub mod disk;
-// mod memcmpable;
+mod memcmpable;
 // pub mod query;
 mod slotted;
 pub mod table;
-// pub mod tuple;
+pub mod tuple;
 
 use anyhow::Result;
 
