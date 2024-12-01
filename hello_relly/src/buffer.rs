@@ -153,7 +153,7 @@ impl BufferPoolManager {
     //
     // if evicted buffer is dirty, save it to disk.
     // allocate evicted buffer to the new page.
-    fn create_page(&mut self) -> Result<Rc<Buffer>, Error> {
+    pub fn create_page(&mut self) -> Result<Rc<Buffer>, Error> {
         let buffer_id = self.pool.evict().ok_or(Error::NoFreeBuffer)?;
         let frame = &mut self.pool[buffer_id];
         let evict_page_id = frame.buffer.page_id;
