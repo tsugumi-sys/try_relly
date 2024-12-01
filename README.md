@@ -68,7 +68,15 @@ B+Treeにテーブルを格納する…… KOBA789
 
 - リーフノードを管理するためのモジュール。リーフノードへのデータ書き込みや、データ移動（新しくノードが追加された時に、それぞれ半分ずつデータを均等に配置する）のためのインターフェースを提供する。
 
-### What is `repr(C)`
+## Memcmpable
+
+length-prefixed encoding and decoding mechanism for sequences of bytes
+
+つまり単一のブロック（Page）内部でバイトブロックのチャンクを作るためのもの。
+
+具体的には、データ末尾にエスケープバイトを設置することで、分割箇所をわかるようにしている。 
+
+## What is `repr(C)`
 
 https://doc.rust-lang.org/nomicon/other-reprs.html#alternative-representations
 
