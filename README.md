@@ -76,6 +76,16 @@ length-prefixed encoding and decoding mechanism for sequences of bytes
 
 具体的には、データ末尾にエスケープバイトを設置することで、分割箇所をわかるようにしている。 
 
+## Executor (query.rs)
+
+メタ情報を読み込んで、クエリを実行する（データ取得かな）モジュール。
+
+クエリのコンディションに基づいて、Pageを１つずつ検索していく。
+
+シーケンシャルスキャンの場合は、テーブルメタ情報を読み取って、１つづつ見ていくだけ。発見されたデータはバッファから読み込まれて、デコードされて変換される。
+
+インデックススキャンの場合は、テーブルメタ情報とインデックステーブルメタ情報の両方を読み取ってテーブルを探索してく。
+
 ## What is `repr(C)`
 
 https://doc.rust-lang.org/nomicon/other-reprs.html#alternative-representations
